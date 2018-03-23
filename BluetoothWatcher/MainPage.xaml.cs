@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Navigation;
 
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
+using System.Collections.ObjectModel;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -28,6 +29,8 @@ namespace BluetoothWatcher
     public sealed partial class MainPage : Page
     {
 
+        DeviceInformation device;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -35,9 +38,22 @@ namespace BluetoothWatcher
 
             // Initialize Device Picker
             DevicePicker picker = new DevicePicker();
-            picker.Filter.SupportedDeviceSelectors.Add(BluetoothLEDevice.GetDeviceSelectorFromPairingState(false));
             picker.Filter.SupportedDeviceSelectors.Add(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
             picker.Show(new Rect(0, 0, 200, 200));
+
+            picker.DeviceSelected += OnDeviceSelected;
+
+        }
+
+        private void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
+        {
+            Debug.WriteLine("On Device Selected Called");
+
+            // assign device to main variable
+            device = args.SelectedDevice;
+
+            string id = device.Id;
+            Debug.WriteLine("Selected " + id);
 
         }
 
@@ -46,16 +62,21 @@ namespace BluetoothWatcher
             Debug.WriteLine("Button Clicked");
             
         }
-        
 
-            // I think this is the dispatcher that will send it to Unity
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
 
-            //var ignore = Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-            //() =>
-            //{
-            //    /* GPS Data Parsing / UI integration goes here */
-            //}
-            //);
+            Debug.WriteLine("OnNavigatedTo Called.");
+        }
+
+        // I think this is the dispatcher that will send it to Unity
+
+        //var ignore = Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+        //() =>
+        //{
+        //    /* GPS Data Parsing / UI integration goes here */
+        //}
+        //);
 
     }
 }
