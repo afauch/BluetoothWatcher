@@ -18,8 +18,10 @@ using Windows.UI.Xaml.Navigation;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+// This service was created based on this tutorial https://blogs.msdn.microsoft.com/cdndevs/2017/04/28/uwp-working-with-bluetooth-devices-part-1/
 
 namespace BluetoothWatcher
 {
@@ -30,6 +32,7 @@ namespace BluetoothWatcher
     {
 
         DeviceInformation device;
+        BluetoothLEDevice leDevice;
 
         public MainPage()
         {
@@ -45,7 +48,8 @@ namespace BluetoothWatcher
 
         }
 
-        private void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
+        // Method for when the user selects the UART device from the UI 
+        private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
             Debug.WriteLine("On Device Selected Called");
 
@@ -54,9 +58,14 @@ namespace BluetoothWatcher
 
             string id = device.Id;
             Debug.WriteLine("Selected " + id);
+            Debug.WriteLine(device.Properties.Values);
+
+            leDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
+            Debug.WriteLine(leDevice.DeviceId);
 
         }
 
+        // This can be used as a utility if necessary, otherwise delete
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Button Clicked");
@@ -69,7 +78,8 @@ namespace BluetoothWatcher
             Debug.WriteLine("OnNavigatedTo Called.");
         }
 
-        // I think this is the dispatcher that will send it to Unity
+        // I think this is the dispatcher that will send messages to Unity
+        // from the original GPS tutorial
 
         //var ignore = Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
         //() =>
