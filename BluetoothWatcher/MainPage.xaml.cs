@@ -42,28 +42,28 @@ namespace BluetoothWatcher
             Debug.WriteLine("Debug is working.");
 
             // Initialize Device Picker
-            DevicePicker picker = new DevicePicker();
-            picker.Filter.SupportedDeviceSelectors.Add(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
-            picker.Show(new Rect(0, 0, 200, 200));
+            //DevicePicker picker = new DevicePicker();
+            //picker.Filter.SupportedDeviceSelectors.Add(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
+            //picker.Show(new Rect(0, 0, 200, 200));
 
-            picker.DeviceSelected += OnDeviceSelected;
+            //picker.DeviceSelected += OnDeviceSelected;
 
         }
 
         // Method for when the user selects the UART device from the UI 
         private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
-            Debug.WriteLine("On Device Selected Called");
+            // Debug.WriteLine("On Device Selected Called");
 
             // assign device to main variable
-            device = args.SelectedDevice;
+            // device = args.SelectedDevice;
 
-            string id = device.Id;
-            Debug.WriteLine("Selected " + id);
-            Debug.WriteLine(device.Properties.Values);
+            // string id = device.Id;
+            // Debug.WriteLine("Selected " + id);
+            // Debug.WriteLine(device.Properties.Values);
 
             // Assign the BluetoothLEDevice object
-            leDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
+            leDevice = await BluetoothLEDevice.FromIdAsync("BluetoothLE#BluetoothLE9c:b6:d0:61:2a:c2-f0:f6:60:6a:fc:de");
             Debug.WriteLine(leDevice.DeviceId);
 
             var services = await leDevice.GetGattServicesAsync();
@@ -84,7 +84,8 @@ namespace BluetoothWatcher
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Button Clicked");
-            
+            OnDeviceSelected(null, null);
+
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)

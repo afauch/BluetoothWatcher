@@ -78,6 +78,9 @@ namespace BluetoothWatcher
             // Debug.WriteLine(dataValue);
             string dataASCII = System.Text.Encoding.ASCII.GetString(data);
             Debug.WriteLine(dataASCII);
+
+
+
         }
 
         public async void Dispose()
