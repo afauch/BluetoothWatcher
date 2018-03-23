@@ -74,6 +74,10 @@ namespace BluetoothWatcher
             Debug.WriteLine("dataCharacteristic_ValueChanged Called");
             data = new byte[args.CharacteristicValue.Length];
             DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
+            string dataValue = ((string)BitConverter.ToString(data));
+            Debug.WriteLine(dataValue);
+            string dataASCII = System.Text.Encoding.ASCII.GetString(data);
+            Debug.WriteLine(dataASCII);
         }
 
         public async void Dispose()
