@@ -19,6 +19,7 @@ using Windows.Devices.Bluetooth;
 using Windows.Devices.Enumeration;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.Devices.Bluetooth.GenericAttributeProfile;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 // This service was created based on this tutorial https://blogs.msdn.microsoft.com/cdndevs/2017/04/28/uwp-working-with-bluetooth-devices-part-1/
@@ -33,6 +34,7 @@ namespace BluetoothWatcher
 
         DeviceInformation device;
         BluetoothLEDevice leDevice;
+        RingSensor ringSensor;
 
         public MainPage()
         {
@@ -60,8 +62,21 @@ namespace BluetoothWatcher
             Debug.WriteLine("Selected " + id);
             Debug.WriteLine(device.Properties.Values);
 
+            // Assign the BluetoothLEDevice object
             leDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
             Debug.WriteLine(leDevice.DeviceId);
+
+            var services = await leDevice.GetGattServicesAsync();
+            GattDeviceService selectedService = null;
+            foreach (var service in services.Services)
+            {
+                // TODO: Fix this - right now it's randomly going through and assigning services
+                // You'll want to actually filter here
+                Debug.WriteLine("Found a service: " + service.Uuid);
+                selectedService = service;
+            }
+
+            InitializeRingSensor(selectedService);
 
         }
 
@@ -76,6 +91,14 @@ namespace BluetoothWatcher
         {
 
             Debug.WriteLine("OnNavigatedTo Called.");
+        }
+
+        protected async void InitializeRingSensor(GattDeviceService service)
+        {
+            Debug.WriteLine("InitializeRingSensor Called");
+
+            ringSensor = new RingSensor(service);
+            await ringSensor.EnableNotifications();
         }
 
         // I think this is the dispatcher that will send messages to Unity
