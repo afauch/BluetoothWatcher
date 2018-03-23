@@ -71,11 +71,11 @@ namespace BluetoothWatcher
         private void dataCharacteristic_ValueChanged(GattCharacteristic sender,
             GattValueChangedEventArgs args)
         {
-            Debug.WriteLine("dataCharacteristic_ValueChanged Called");
+            // Debug.WriteLine("dataCharacteristic_ValueChanged Called");
             data = new byte[args.CharacteristicValue.Length];
             DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(data);
-            string dataValue = ((string)BitConverter.ToString(data));
-            Debug.WriteLine(dataValue);
+            // string dataValue = ((string)BitConverter.ToString(data));
+            // Debug.WriteLine(dataValue);
             string dataASCII = System.Text.Encoding.ASCII.GetString(data);
             Debug.WriteLine(dataASCII);
         }
