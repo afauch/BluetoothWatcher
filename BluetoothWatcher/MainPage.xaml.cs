@@ -100,6 +100,11 @@ namespace BluetoothWatcher
                 {
                     Debug.WriteLine("Pairing status is " + d.Pairing.IsPaired);
                     Debug.WriteLine("Found ID: " + d.Id);
+                    foreach(var item in d.Properties)
+                    {
+                        Debug.WriteLine("Key: " + item.Key);
+                        Debug.WriteLine("Value: " + item.Value);
+                    }
                     filteredDevices.Add(d);
                 }
             }
