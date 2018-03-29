@@ -36,6 +36,8 @@ namespace BluetoothWatcher
         BluetoothLEDevice leDevice;
         RingSensor ringSensor;
 
+
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -53,6 +55,10 @@ namespace BluetoothWatcher
         // Method for when the user selects the UART device from the UI 
         private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
+
+            // Try to just get the list of available devices
+            enumerateSnapshot();
+
             // Debug.WriteLine("On Device Selected Called");
 
             // assign device to main variable
@@ -79,6 +85,27 @@ namespace BluetoothWatcher
             InitializeRingSensor(selectedService);
 
         }
+
+        async void enumerateSnapshot()
+        {
+            // select only paired bluetooth devices
+            
+            Debug.WriteLine("enumerateSnapshot called");
+            DeviceInformationCollection collection = await DeviceInformation.FindAllAsync();
+            Debug.WriteLine("number of devices in collection: " + collection.Count);
+            List<DeviceInformation> filteredDevices = new List<DeviceInformation>();
+            foreach(DeviceInformation d in collection)
+            {
+                if(d.Pairing.IsPaired == true)
+                {
+                    Debug.WriteLine("Pairing status is " + d.Pairing.IsPaired);
+                    Debug.WriteLine("Found ID: " + d.Id);
+                    filteredDevices.Add(d);
+                }
+            }
+        }
+
+
 
         // This can be used as a utility if necessary, otherwise delete
         private void Button_Click_1(object sender, RoutedEventArgs e)

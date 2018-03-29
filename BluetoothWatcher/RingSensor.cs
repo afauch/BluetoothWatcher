@@ -17,16 +17,5 @@ namespace BluetoothWatcher
 
         }
 
-        //public async Task<string> GetValue()
-        //{
-        //    Debug.WriteLine("GetValue Called from RingSensor");
-
-        //    byte[] data = await ReadValue();
-        //    // string dataValue = ((string)BitConverter.ToString(data));
-        //    // Debug.WriteLine(dataValue);
-        //    string dataASCII = System.Text.Encoding.ASCII.GetString(data);
-        //    return dataASCII;
-        //}
-
     }
 }
