@@ -32,7 +32,8 @@ namespace BluetoothWatcher
     public sealed partial class MainPage : Page
     {
         List<DeviceInformation> filteredDevices = new List<DeviceInformation>();
-        DeviceInformation device;
+        HashSet<BluetoothLEDevice> possibleLeDevices = new HashSet<BluetoothLEDevice>();
+        HashSet<String> possibleDeviceIds = new HashSet<String>();
         BluetoothLEDevice leDevice;
         RingSensor ringSensor;
 
@@ -57,8 +58,8 @@ namespace BluetoothWatcher
         {
 
             // Try to just get the list of available devices
-            device = await enumerateSnapshot();
-
+            filteredDevices = await enumerateSnapshot();
+            Boolean foundDevice = false;
             // Debug.WriteLine("On Device Selected Called");
 
             // assign device to main variable
@@ -69,8 +70,49 @@ namespace BluetoothWatcher
             // Debug.WriteLine(device.Properties.Values);
 
             // Assign the BluetoothLEDevice object
-            leDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
-            Debug.WriteLine("Filtered Device is " + leDevice.DeviceId);
+            Debug.WriteLine("About to loop through.");
+            if (filteredDevices.Count > 0)
+            {
+                foreach (DeviceInformation d in filteredDevices)
+                {
+                    try
+                    {
+                        Debug.WriteLine("Searching for BLE device for " + d.Id);
+                        BluetoothLEDevice l = await BluetoothLEDevice.FromIdAsync(d.Id);
+                        Debug.WriteLine("Found Bluetooth Device: " + l.DeviceId);
+                        if (!possibleDeviceIds.Contains(l.DeviceId))
+                            possibleLeDevices.Add(l);
+                        possibleDeviceIds.Add(l.DeviceId);
+                        String leID = "f0:f6:60:6a:fc:de";
+                        if (l.DeviceId.Contains(leID) || l.DeviceId.Contains("f0f6606afcde"))
+                        {
+                            Debug.WriteLine("yes, we have found our one true device");
+                            leDevice = l;
+                            foundDevice = true;
+                        }
+                    }
+                    catch
+                    {
+                        Debug.WriteLine("No BluetoothLEDevice Found for DeviceInformation " + d.Id);
+                    }
+                }
+            } else
+            {
+                Debug.WriteLine("No DeviceInformation objects meet criteria.");
+            }
+            Debug.WriteLine("Size of set: " + possibleLeDevices.Count);
+            Debug.WriteLine("Found Device? " + foundDevice);
+            if (foundDevice == false) {
+                foreach (BluetoothLEDevice x in possibleLeDevices)
+                {
+                    Debug.WriteLine("The device is " + x.DeviceId);
+                }
+
+            }
+            // Now we're going to pick THE ONE: f0:f6:60:6a:fc:de
+
+
+
 
             var services = await leDevice.GetGattServicesAsync();
             GattDeviceService selectedService = null;
@@ -86,33 +128,33 @@ namespace BluetoothWatcher
 
         }
 
-        async Task<DeviceInformation> enumerateSnapshot()
+        async Task<List<DeviceInformation>> enumerateSnapshot()
         {
             // select only paired bluetooth devices
+
+            List<DeviceInformation> returnedDevices = new List<DeviceInformation>();
             
             Debug.WriteLine("enumerateSnapshot called");
             DeviceInformationCollection collection = await DeviceInformation.FindAllAsync();
             Debug.WriteLine("number of devices in collection: " + collection.Count);
-            foreach(DeviceInformation d in collection)
+            if (collection.Count > 0)
             {
-                if(d.Pairing.IsPaired == true)
+                for (int i=0; i < collection.Count; i++)
                 {
-                    Debug.WriteLine("Pairing status is " + d.Pairing.IsPaired);
-                    Debug.WriteLine("Paired Device ID: " + d.Id);
-                    object itemNameDisplay;
-                    d.Properties.TryGetValue("System.ItemNameDisplay", out itemNameDisplay);
-                    string itemNameDisplayString = itemNameDisplay.ToString();
-                    Debug.WriteLine("Paired device is called " + itemNameDisplayString);
-
-                    if (itemNameDisplayString == "Arduino" || itemNameDisplayString == "UART")
+                    try
                     {
-                        Debug.WriteLine("This device matches filter string and is added to filteredDevices");
-                        filteredDevices.Add(d);
+                        Debug.WriteLine(i + " Looping through device " + collection[i].Id);
+                        if (collection[i].Pairing.IsPaired == true)
+                        {
+                            returnedDevices.Add(collection[i]);
+                        }
+                    } catch(System.Exception e)
+                    {
+                        Debug.WriteLine("Null reference: " + e.Message);
                     }
                 }
             }
-
-            return filteredDevices[0];
+            return returnedDevices;
         }
 
 
