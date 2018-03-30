@@ -31,7 +31,7 @@ namespace BluetoothWatcher
     /// </summary>
     public sealed partial class MainPage : Page
     {
-
+        List<DeviceInformation> filteredDevices = new List<DeviceInformation>();
         DeviceInformation device;
         BluetoothLEDevice leDevice;
         RingSensor ringSensor;
@@ -57,7 +57,7 @@ namespace BluetoothWatcher
         {
 
             // Try to just get the list of available devices
-            enumerateSnapshot();
+            device = await enumerateSnapshot();
 
             // Debug.WriteLine("On Device Selected Called");
 
@@ -69,8 +69,8 @@ namespace BluetoothWatcher
             // Debug.WriteLine(device.Properties.Values);
 
             // Assign the BluetoothLEDevice object
-            leDevice = await BluetoothLEDevice.FromIdAsync("BluetoothLE#BluetoothLE9c:b6:d0:61:2a:c2-f0:f6:60:6a:fc:de");
-            Debug.WriteLine(leDevice.DeviceId);
+            leDevice = await BluetoothLEDevice.FromIdAsync(device.Id);
+            Debug.WriteLine("Filtered Device is " + leDevice.DeviceId);
 
             var services = await leDevice.GetGattServicesAsync();
             GattDeviceService selectedService = null;
@@ -86,28 +86,33 @@ namespace BluetoothWatcher
 
         }
 
-        async void enumerateSnapshot()
+        async Task<DeviceInformation> enumerateSnapshot()
         {
             // select only paired bluetooth devices
             
             Debug.WriteLine("enumerateSnapshot called");
             DeviceInformationCollection collection = await DeviceInformation.FindAllAsync();
             Debug.WriteLine("number of devices in collection: " + collection.Count);
-            List<DeviceInformation> filteredDevices = new List<DeviceInformation>();
             foreach(DeviceInformation d in collection)
             {
                 if(d.Pairing.IsPaired == true)
                 {
                     Debug.WriteLine("Pairing status is " + d.Pairing.IsPaired);
-                    Debug.WriteLine("Found ID: " + d.Id);
-                    foreach(var item in d.Properties)
+                    Debug.WriteLine("Paired Device ID: " + d.Id);
+                    object itemNameDisplay;
+                    d.Properties.TryGetValue("System.ItemNameDisplay", out itemNameDisplay);
+                    string itemNameDisplayString = itemNameDisplay.ToString();
+                    Debug.WriteLine("Paired device is called " + itemNameDisplayString);
+
+                    if (itemNameDisplayString == "Arduino" || itemNameDisplayString == "UART")
                     {
-                        Debug.WriteLine("Key: " + item.Key);
-                        Debug.WriteLine("Value: " + item.Value);
+                        Debug.WriteLine("This device matches filter string and is added to filteredDevices");
+                        filteredDevices.Add(d);
                     }
-                    filteredDevices.Add(d);
                 }
             }
+
+            return filteredDevices[0];
         }
 
 
