@@ -4,4 +4,4 @@ This is the UWP application used to troubleshoot Bluetooth device communication 
 
 ## Current Issues
 
-See 'Issues' for current issues.
+Desktop implementation is successfully reading the input stream; however, the HoloLens deployment is still throwing errors. See 'Issues' for detailed description of current issues.
