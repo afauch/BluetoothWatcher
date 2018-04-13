@@ -100,31 +100,44 @@ namespace BluetoothWatcher
             {
                 Debug.WriteLine("No DeviceInformation objects meet criteria.");
             }
-            Debug.WriteLine("Size of set: " + possibleLeDevices.Count);
-            Debug.WriteLine("Found Device? " + foundDevice);
-            if (foundDevice == false) {
-                foreach (BluetoothLEDevice x in possibleLeDevices)
+
+
+            Debug.WriteLine("=======================================");
+            Debug.WriteLine("=======================================");
+            Debug.WriteLine("=======================================");
+
+            Debug.WriteLine("Scanning through all devices returned these possible matches.");
+            if(foundDevice == true)
+            {
+                foreach(BluetoothLEDevice x in possibleLeDevices)
                 {
-                    Debug.WriteLine("The device is " + x.DeviceId);
+                    Debug.WriteLine("Device: " + x.DeviceId);
                 }
 
-            }
-            // Now we're going to pick THE ONE: f0:f6:60:6a:fc:de
+                Debug.WriteLine("The device assigned to leDevice is: ");
+                Debug.WriteLine("Device: " + leDevice.DeviceId);
 
-
-
-
-            var services = await leDevice.GetGattServicesAsync();
-            GattDeviceService selectedService = null;
-            foreach (var service in services.Services)
+            } else
             {
-                // TODO: Fix this - right now it's randomly going through and assigning services
-                // You'll want to actually filter here
-                Debug.WriteLine("Found a service: " + service.Uuid);
-                selectedService = service;
+                Debug.WriteLine("No possible matches were found.");
             }
 
-            InitializeRingSensor(selectedService);
+            // Let's confirm what devices we are working with now.
+
+
+            // Next try to find the right service to connect to
+
+            //var services = await leDevice.GetGattServicesAsync();
+            //GattDeviceService selectedService = null;
+            //foreach (var service in services.Services)
+            //{
+            //    // TODO: Fix this - right now it's randomly going through and assigning services
+            //    // You'll want to actually filter here
+            //    Debug.WriteLine("Found a service: " + service.Uuid);
+            //    selectedService = service;
+            //}
+
+            //InitializeRingSensor(selectedService);
 
         }
 
