@@ -91,7 +91,19 @@ namespace BluetoothWatcher
             Debug.WriteLine("============");
             Debug.WriteLine("============");
 
-            InitializeRingSensor(selectedService);
+            Debug.WriteLine("=GATT CHARACTERISTICS FOR " + selectedService.Uuid + " =");
+
+            var allCharacteristics = selectedService.GetAllCharacteristics();
+            foreach(GattCharacteristic gc in allCharacteristics)
+            {
+                Debug.WriteLine("GattCharacteristic.Uuid: " + gc.Uuid);
+                Debug.WriteLine("GattCharacteristic.UserDescriptions: " + gc.UserDescription);
+                Debug.WriteLine("GattCharacteristic.AttributeHandle: " + gc.AttributeHandle);
+                Debug.WriteLine("GattCharacteristic.CharacteristicProperties: " + gc.CharacteristicProperties);
+                Debug.WriteLine("***");
+            }
+
+            // InitializeRingSensor(selectedService);
 
         }
 
