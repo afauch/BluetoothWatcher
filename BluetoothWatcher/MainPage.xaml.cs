@@ -94,6 +94,7 @@ namespace BluetoothWatcher
             Debug.WriteLine("=GATT CHARACTERISTICS FOR " + selectedService.Uuid + " =");
 
             var allCharacteristics = selectedService.GetAllCharacteristics();
+            GattCharacteristic selectedCharacteristic = null;
             foreach(GattCharacteristic gc in allCharacteristics)
             {
                 Debug.WriteLine("GattCharacteristic.Uuid: " + gc.Uuid);
@@ -101,9 +102,31 @@ namespace BluetoothWatcher
                 Debug.WriteLine("GattCharacteristic.AttributeHandle: " + gc.AttributeHandle);
                 Debug.WriteLine("GattCharacteristic.CharacteristicProperties: " + gc.CharacteristicProperties);
                 Debug.WriteLine("***");
+
+                selectedCharacteristic = gc;
             }
 
-            // InitializeRingSensor(selectedService);
+            Debug.WriteLine("Selected Characteristic: " + selectedCharacteristic.Uuid);
+
+            // There are two things to take care of before getting notifications:
+            // 1. Write to Client Characteristic Configuration Description (CCCD)
+
+            GattCommunicationStatus status = await selectedCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(GattClientCharacteristicConfigurationDescriptorValue.Notify);
+            if(status == GattCommunicationStatus.Success)
+            {
+                Debug.WriteLine("Successfully wrote to CCCD");
+            }
+            else
+            {
+                Debug.WriteLine("Unsuccessful writing to CCCD");
+            }
+
+
+            // 2. Handle the Characteristic.valueChanged event
+
+
+
+            // MAYBE OBSOLETE: InitializeRingSensor(selectedService);
 
         }
 
