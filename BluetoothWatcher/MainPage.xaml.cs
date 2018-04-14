@@ -38,7 +38,6 @@ namespace BluetoothWatcher
         RingSensor ringSensor;
 
 
-
         public MainPage()
         {
             this.InitializeComponent();
@@ -78,6 +77,7 @@ namespace BluetoothWatcher
                     try
                     {
                         Debug.WriteLine("Searching for BLE device for " + d.Id);
+
                         BluetoothLEDevice l = await BluetoothLEDevice.FromIdAsync(d.Id);
                         Debug.WriteLine("Found Bluetooth Device: " + l.DeviceId);
                         if (!possibleDeviceIds.Contains(l.DeviceId))
@@ -127,7 +127,9 @@ namespace BluetoothWatcher
 
             // Next try to find the right service to connect to
 
-            //var services = await leDevice.GetGattServicesAsync();
+            
+            var services = await leDevice.GetGattServicesAsync();
+            Debug.WriteLine("Made it past GetGattServicesAsync");
             //GattDeviceService selectedService = null;
             //foreach (var service in services.Services)
             //{
