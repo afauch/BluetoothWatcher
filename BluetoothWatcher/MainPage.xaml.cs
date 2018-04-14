@@ -35,36 +35,27 @@ namespace BluetoothWatcher
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        List<DeviceInformation> filteredDevices = new List<DeviceInformation>();
-        HashSet<BluetoothLEDevice> possibleLeDevices = new HashSet<BluetoothLEDevice>();
-        HashSet<String> possibleDeviceIds = new HashSet<String>();
         BluetoothLEDevice leDevice;
-        RingSensor ringSensor;
-
         ulong bluetoothAddress = 264940970245342;
-
 
         public MainPage()
         {
             this.InitializeComponent();
             Debug.WriteLine("Debug is working.");
+            
+        }
 
-            // Initialize Device Picker
-            //DevicePicker picker = new DevicePicker();
-            //picker.Filter.SupportedDeviceSelectors.Add(BluetoothLEDevice.GetDeviceSelectorFromPairingState(true));
-            //picker.Show(new Rect(0, 0, 200, 200));
-
-            //picker.DeviceSelected += OnDeviceSelected;
+        // This can be used as a utility if necessary, otherwise delete
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("Button Clicked");
+            OnDeviceSelected(null, null);
 
         }
 
         // Method for when the user selects the UART device from the UI 
         private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
-
-
-            // Let's confirm what devices we are working with now.
-
 
             // Next try to find the right service to connect to
 
@@ -134,73 +125,10 @@ namespace BluetoothWatcher
         // METHOD TO CALL ON BLUETOOTH VALUE CHANGE
         void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
-            Debug.WriteLine("VALUE CHANGED");
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
-            Debug.WriteLine(reader.ToString());
+            string output = reader.ReadString(args.CharacteristicValue.Length);
+            Debug.WriteLine(output);
         }
-
-        async Task<List<DeviceInformation>> enumerateSnapshot()
-        {
-            // select only paired bluetooth devices
-
-            List<DeviceInformation> returnedDevices = new List<DeviceInformation>();
-            
-            Debug.WriteLine("enumerateSnapshot called");
-            DeviceInformationCollection collection = await DeviceInformation.FindAllAsync();
-            Debug.WriteLine("number of devices in collection: " + collection.Count);
-            if (collection.Count > 0)
-            {
-                for (int i=0; i < collection.Count; i++)
-                {
-                    try
-                    {
-                        Debug.WriteLine(i + " Looping through device " + collection[i].Id);
-                        if (collection[i].Pairing.IsPaired == true)
-                        {
-                            returnedDevices.Add(collection[i]);
-                        }
-                    } catch(System.Exception e)
-                    {
-                        Debug.WriteLine("Null reference: " + e.Message);
-                    }
-                }
-            }
-            return returnedDevices;
-        }
-
-
-
-        // This can be used as a utility if necessary, otherwise delete
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("Button Clicked");
-            OnDeviceSelected(null, null);
-
-        }
-
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-
-            Debug.WriteLine("OnNavigatedTo Called.");
-        }
-
-        protected async void InitializeRingSensor(GattDeviceService service)
-        {
-            Debug.WriteLine("InitializeRingSensor Called");
-
-            ringSensor = new RingSensor(service);
-            await ringSensor.EnableNotifications();
-        }
-
-        // I think this is the dispatcher that will send messages to Unity
-        // from the original GPS tutorial
-
-        //var ignore = Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-        //() =>
-        //{
-        //    /* GPS Data Parsing / UI integration goes here */
-        //}
-        //);
 
     }
 }
