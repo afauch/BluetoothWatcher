@@ -24,6 +24,9 @@ using Windows.Devices.Bluetooth.GenericAttributeProfile;
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 // This service was created based on this tutorial https://blogs.msdn.microsoft.com/cdndevs/2017/04/28/uwp-working-with-bluetooth-devices-part-1/
 
+// UART BLUETOOTH ADDRESS
+// 264940970245342
+
 namespace BluetoothWatcher
 {
     /// <summary>
@@ -36,6 +39,8 @@ namespace BluetoothWatcher
         HashSet<String> possibleDeviceIds = new HashSet<String>();
         BluetoothLEDevice leDevice;
         RingSensor ringSensor;
+
+        ulong bluetoothAddress = 264940970245342;
 
 
         public MainPage()
@@ -56,90 +61,25 @@ namespace BluetoothWatcher
         private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
 
-            // Try to just get the list of available devices
-            filteredDevices = await enumerateSnapshot();
-            Boolean foundDevice = false;
-            // Debug.WriteLine("On Device Selected Called");
-
-            // assign device to main variable
-            // device = args.SelectedDevice;
-
-            // string id = device.Id;
-            // Debug.WriteLine("Selected " + id);
-            // Debug.WriteLine(device.Properties.Values);
-
-            // Assign the BluetoothLEDevice object
-            Debug.WriteLine("About to loop through.");
-            if (filteredDevices.Count > 0)
-            {
-                foreach (DeviceInformation d in filteredDevices)
-                {
-                    try
-                    {
-                        Debug.WriteLine("Searching for BLE device for " + d.Id);
-
-                        BluetoothLEDevice l = await BluetoothLEDevice.FromIdAsync(d.Id);
-                        Debug.WriteLine("Found Bluetooth Device: " + l.DeviceId);
-                        if (!possibleDeviceIds.Contains(l.DeviceId))
-                            possibleLeDevices.Add(l);
-                        possibleDeviceIds.Add(l.DeviceId);
-                        String leID = "f0:f6:60:6a:fc:de";
-                        if (l.DeviceId.Contains(leID) || l.DeviceId.Contains("f0f6606afcde"))
-                        {
-                            Debug.WriteLine("yes, we have found our one true device");
-                            leDevice = l;
-                            foundDevice = true;
-                        }
-                    }
-                    catch
-                    {
-                        Debug.WriteLine("No BluetoothLEDevice Found for DeviceInformation " + d.Id);
-                    }
-                }
-            } else
-            {
-                Debug.WriteLine("No DeviceInformation objects meet criteria.");
-            }
-
-
-            Debug.WriteLine("=======================================");
-            Debug.WriteLine("=======================================");
-            Debug.WriteLine("=======================================");
-
-            Debug.WriteLine("Scanning through all devices returned these possible matches.");
-            if(foundDevice == true)
-            {
-                foreach(BluetoothLEDevice x in possibleLeDevices)
-                {
-                    Debug.WriteLine("Device: " + x.DeviceId);
-                }
-
-                Debug.WriteLine("The device assigned to leDevice is: ");
-                Debug.WriteLine("Device: " + leDevice.DeviceId);
-
-            } else
-            {
-                Debug.WriteLine("No possible matches were found.");
-            }
 
             // Let's confirm what devices we are working with now.
 
 
             // Next try to find the right service to connect to
 
-            
+            leDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
             var services = await leDevice.GetGattServicesAsync();
             Debug.WriteLine("Made it past GetGattServicesAsync");
-            //GattDeviceService selectedService = null;
-            //foreach (var service in services.Services)
-            //{
-            //    // TODO: Fix this - right now it's randomly going through and assigning services
-            //    // You'll want to actually filter here
-            //    Debug.WriteLine("Found a service: " + service.Uuid);
-            //    selectedService = service;
-            //}
+            GattDeviceService selectedService = null;
+            foreach (var service in services.Services)
+            {
+                // TODO: Fix this - right now it's randomly going through and assigning services
+                // You'll want to actually filter here
+                Debug.WriteLine("Found a service: " + service.Uuid);
+                selectedService = service;
+            }
 
-            //InitializeRingSensor(selectedService);
+            InitializeRingSensor(selectedService);
 
         }
 
