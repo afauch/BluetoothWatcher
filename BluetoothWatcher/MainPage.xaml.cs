@@ -20,6 +20,7 @@ using Windows.Devices.Enumeration;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Storage.Streams;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 // This service was created based on this tutorial https://blogs.msdn.microsoft.com/cdndevs/2017/04/28/uwp-working-with-bluetooth-devices-part-1/
@@ -115,12 +116,12 @@ namespace BluetoothWatcher
             if(status == GattCommunicationStatus.Success)
             {
                 Debug.WriteLine("Successfully wrote to CCCD");
+                selectedCharacteristic.ValueChanged += Characteristic_ValueChanged;
             }
             else
             {
                 Debug.WriteLine("Unsuccessful writing to CCCD");
             }
-
 
             // 2. Handle the Characteristic.valueChanged event
 
@@ -128,6 +129,14 @@ namespace BluetoothWatcher
 
             // MAYBE OBSOLETE: InitializeRingSensor(selectedService);
 
+        }
+
+        // METHOD TO CALL ON BLUETOOTH VALUE CHANGE
+        void Characteristic_ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
+        {
+            Debug.WriteLine("VALUE CHANGED");
+            var reader = DataReader.FromBuffer(args.CharacteristicValue);
+            Debug.WriteLine(reader.ToString());
         }
 
         async Task<List<DeviceInformation>> enumerateSnapshot()
