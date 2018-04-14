@@ -68,8 +68,28 @@ namespace BluetoothWatcher
             // Next try to find the right service to connect to
 
             leDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
+
+            Debug.WriteLine("============");
+            Debug.WriteLine("============");
+            Debug.WriteLine("============");
+
+            Debug.WriteLine("Made it past BluetoothLEDevice");
+            Debug.WriteLine("Name is " + leDevice.Name);
+            Debug.WriteLine("ConnectionStatus is " + leDevice.ConnectionStatus);
+            Debug.WriteLine("DeviceId is " + leDevice.DeviceId);
+            Debug.WriteLine("Number of GattServices are " + leDevice.GattServices.Count);
+
+
+
+            Debug.WriteLine("============");
+            Debug.WriteLine("============");
+            Debug.WriteLine("============");
+
             var services = await leDevice.GetGattServicesAsync();
             Debug.WriteLine("Made it past GetGattServicesAsync");
+
+
+
             GattDeviceService selectedService = null;
             foreach (var service in services.Services)
             {
