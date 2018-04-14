@@ -80,28 +80,16 @@ namespace BluetoothWatcher
             Debug.WriteLine("Number of GattServices are " + leDevice.GattServices.Count);
 
             Debug.WriteLine("=GATT SERVICES=");
-            foreach(GattDeviceService gds in leDevice.GattServices)
+            GattDeviceService selectedService = null;
+            foreach (GattDeviceService gds in leDevice.GattServices)
             {
                 Debug.WriteLine("GattDeviceService.uuid: " + gds.Uuid);
+                selectedService = gds;
             }
 
             Debug.WriteLine("============");
             Debug.WriteLine("============");
             Debug.WriteLine("============");
-
-            var services = await leDevice.GetGattServicesAsync();
-            Debug.WriteLine("Made it past GetGattServicesAsync");
-
-
-
-            GattDeviceService selectedService = null;
-            foreach (var service in services.Services)
-            {
-                // TODO: Fix this - right now it's randomly going through and assigning services
-                // You'll want to actually filter here
-                Debug.WriteLine("Found a service: " + service.Uuid);
-                selectedService = service;
-            }
 
             InitializeRingSensor(selectedService);
 
