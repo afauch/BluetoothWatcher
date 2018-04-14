@@ -36,7 +36,9 @@ namespace BluetoothWatcher
     public sealed partial class MainPage : Page
     {
         BluetoothLEDevice leDevice;
-        ulong bluetoothAddress = 264940970245342;
+        string macAddress = "f0:f6:60:6a:fc:de";
+        ulong bluetoothAddress;
+        // ulong bluetoothAddress = 264940970245342;
 
         public MainPage()
         {
@@ -57,7 +59,14 @@ namespace BluetoothWatcher
         private async void OnDeviceSelected(DevicePicker sender, DeviceSelectedEventArgs args)
         {
 
-            // Next try to find the right service to connect to
+            // Convert MAC Address to BluetoothAddress
+            // remove the colons
+            macAddress = macAddress.Replace(":", "");
+            Debug.WriteLine("Formatted MAC Address " + macAddress);
+            bluetoothAddress = ulong.Parse(macAddress, System.Globalization.NumberStyles.HexNumber);
+            Debug.WriteLine("Converted Bluetooth Address is " + bluetoothAddress);
+
+            // Connect via the BluetoothAddress
 
             leDevice = await BluetoothLEDevice.FromBluetoothAddressAsync(bluetoothAddress);
 
