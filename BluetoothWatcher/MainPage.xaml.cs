@@ -79,7 +79,11 @@ namespace BluetoothWatcher
             Debug.WriteLine("DeviceId is " + leDevice.DeviceId);
             Debug.WriteLine("Number of GattServices are " + leDevice.GattServices.Count);
 
-
+            Debug.WriteLine("=GATT SERVICES=");
+            foreach(GattDeviceService gds in leDevice.GattServices)
+            {
+                Debug.WriteLine("GattDeviceService.uuid: " + gds.Uuid);
+            }
 
             Debug.WriteLine("============");
             Debug.WriteLine("============");
